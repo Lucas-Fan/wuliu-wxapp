@@ -1,0 +1,89 @@
+{
+	"GoodItems": {
+		"goodCode": "1101010102123209302191",
+		"GoodItemModel": [
+		{
+			"id": 101,
+			"operation": "生产",
+			"address": "济南国帆帐篷有限公司",
+			"checkedTime": "2019.11.01 10:20:32"
+		},
+		{
+			"id": 102,
+			"operation": "发货",
+			"address": "生产商",
+			"checkedTime": "2020.02.20 08:23:01"
+		},
+		{
+			"id": 103,
+			"operation": "入库",
+			"address": "yy物资库",
+			"checkedTime": "2020.02.21 12:00:01"
+		},
+		{
+			"id": 104,
+			"operation": "出库",
+			"address": "yy物资库",
+			"checkedTime": "2020.02.22 11:17:01"
+		},
+		{
+			"id": 105,
+			"operation": "发货",
+			"address": "京东A分公司",
+			"checkedTime": "2020.02.22 12:23:01"
+		},
+		{
+			"id": 106,
+			"operation": "签收",
+			"address": "xx物资库",
+			"checkedTime": "2020.02.23 08:23:01"
+		},
+		{
+			"id": 107,
+			"operation": "入库",
+			"address": "xx物资库",
+			"checkedTime": "2020.02.23 09:23:01"
+		},
+		{
+			"id": 108,
+			"operation": "出库",
+			"address": "xx物资库",
+			"checkedTime": "2020.03.03 08:23:01"
+		},
+		{
+			"id": 109,
+			"operation": "发放",
+			"address": "事发地",
+			"checkedTime": "2020.03.03 16:23:01"
+		}
+	]
+	},
+	"acceptModel": [
+		{"key": "物资码", "value": "1101010102123209302191"},
+		{"key": "物流商", "value": "京东A分公司"},
+		{"key": "车牌", "value": "浙A93293"},
+		{"key": "车辆类型", "value": "全挂牵引车"},
+		{"key": "出发地点", "value": "xx物资仓库"},
+		{"key": "负责人", "value": "赵大华"},
+		{"key": "负责人手机号", "value": "13854546535"}
+	],
+	"arriveModel": [
+		{"key": "物资码", "value": "1101010102123209302191"},
+		{"key": "物流商", "value": "京东A分公司"},
+		{"key": "车牌", "value": "浙A93293"},
+		{"key": "车辆类型", "value": "全挂牵引车"},
+		{"key": "到达地点", "value": "zz物资仓库"},
+		{"key": "负责人", "value": "赵大华"},
+		{"key": "负责人手机号", "value": "13854546535"}
+	],
+	"provideModel": {
+		"goodCode": "1101010102123209302191",
+		"itemModel": [
+			{"key": "发放地点", "value": "xx事发地"},
+			{"key": "接收人群或团体", "value": "xx受难群体"},
+			{"key": "发放人", "value": "吴克俭"},
+			{"key": "发放人手机号", "value": "13598763759"}
+		]
+	}
+
+}
