@@ -16,6 +16,7 @@ interface IRankProps {
 
 interface IRankState {
 	goodCode: string,
+	goodName: string,
 	GoodItems: Array<Item>,
   isLoaded: boolean;
   hasMore: boolean;
@@ -29,6 +30,7 @@ class InforChain extends Taro.Component<IRankProps, IRankState> {
     super(props);
     this.state = {
       goodCode: "",
+      goodName: "",
 			GoodItems: [],
       isLoaded: false,
       hasMore: true,
@@ -75,7 +77,8 @@ class InforChain extends Taro.Component<IRankProps, IRankState> {
 		const res = await NetworkManager.getGoodItems();
 		console.log(res,'GoodItemsModel')
 		this.setState({
-			goodCode: res.goodCode,
+			goodCode: this.$router.params.goodCode,
+			goodName: this.$router.params.goodName,
       GoodItems: res.GoodItemModel,
 		})
 	}
@@ -83,7 +86,7 @@ class InforChain extends Taro.Component<IRankProps, IRankState> {
     this.refList = node;
   };
 	render() {
-		const { goodCode, GoodItems, isLoaded, hasMore, isEmpty } = this.state;
+		const { goodCode, GoodItems, goodName, hasMore, isEmpty } = this.state;
 		return (
 			<View className='lazy-view'>
           <View
@@ -95,22 +98,37 @@ class InforChain extends Taro.Component<IRankProps, IRankState> {
           >
             <View
               style={{
-                fontSize: "18px",
-								fontFamily: "PingFangSC-Medium,PingFang SC",
-								width: "100vw",
-                color: "#114750",
-								textAlign: "center",
-								lineHeight: "60px",
-								height: "60px",
-								margin: "10px 10px",
-								padding: "5px",
-								background: "rgba(255,255,255,1)",
-								borderRadius: "8px",
-								border: "0px solid rgba(151,151,151,1)",
-								boxShadow: "0px 1px 5px rgba(0, 0, 0, 0.4)"
+				fontSize: "16px",
+				display: "flex",
+				fontFamily: "PingFangSC-Medium,PingFang SC",
+				width: "90vw",
+				color: "#114750",
+				textAlign: "center",
+				lineHeight: "60px",
+				height: "120px",
+				margin: "10px 10px",
+				padding: "5px",
+				background: "rgba(255,255,255,1)",
+				borderRadius: "8px",
+				flexWrap: "wrap",
+				border: "0px solid rgba(151,151,151,1)",
+				boxShadow: "0px 1px 5px rgba(0, 0, 0, 0.4)"
               }}
             >
-              {goodCode}
+              <View
+                style={{
+                  width: "88vw",
+                }}
+              >
+                物资码：{goodCode}
+              </View>
+              <View
+                style={{
+                  width: "88vw",
+                }}
+              >
+                物资类型：{goodName}
+              </View>
             </View>
           </View>
         <ListView

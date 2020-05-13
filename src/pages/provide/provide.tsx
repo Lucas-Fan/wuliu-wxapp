@@ -1,17 +1,22 @@
 import { ComponentType } from 'react'
-import Taro, { Component, Config } from '@tarojs/taro'
+import Taro, { Config } from '@tarojs/taro'
 import { View, Button, Text, Input } from '@tarojs/components'
+import { AtIcon, AtMessage, AtImagePicker  } from 'taro-ui'
 import { observer, inject } from '@tarojs/mobx'
 import { NetworkManager, KeyValue } from "../../network/network";
-import ListView from "taro-listview";
 
 interface ProvideProps {
-  date?: string | "today" | "yesterday";
+  date?: string | "today" | "yesterday"
 }
 
 interface ProvideState {
-	goodCode: string,
-	itemModel: Array<KeyValue>,
+	goodCode: string
+	goodName: string
+  itemModel: Array<KeyValue>
+  latitude: string
+  longitude: string
+  files: Array<object>
+  isFull: boolean
 }
 
 @inject('goodStore')
@@ -21,7 +26,12 @@ class InforChain extends Taro.Component<ProvideProps, ProvideState> {
     super(props);
     this.state = {
       goodCode: "",
-			itemModel: []
+      goodName: "",
+      itemModel: [],
+      latitude: "",
+      longitude: "",
+      files: [],
+      isFull: false
     };
   }
   /**
@@ -51,30 +61,72 @@ class InforChain extends Taro.Component<ProvideProps, ProvideState> {
 
 	componentDidHide() { }
 
-	refList = {};
-
+  refList = {};
+  
+  // 获取图片
+  onChange (files) {
+    this.setState({
+      files
+    })
+    if (this.state.files.length == 3) {
+      this.setState({
+        isFull: true
+      })
+    } else {
+      this.setState({
+        isFull: false
+      })
+    }
+  }
 	/* 
 	 * 获得当前地址
 	 */
-  getLocation() {
+  autoGetLocation() {
+    debugger
+    const _this = this;
     wx.getLocation({
-      type: "gcj02",
-      success: function(res) {
+      type: "wgs84",
+      success (res) {
         console.log(res,"location");
-        wx.openLocation({
+        _this.setState({
           latitude: res.latitude,
-          longitude: res.longitude,
-          scale: 18,
-          success:function(res) {
-            wx.chooseLocation({
-              success:function(res) {
-                console.log(res,'chooseLocation')
-              }
-            })
-          }
+          longitude: res.longitude
         })
+        //弹框
+        wx.showModal({
+          title: '当前位置',
+          content: "纬度:" + _this.state.latitude + ",经度:" + _this.state.longitude,
+        })
+        // wx.openLocation({
+        //   latitude: res.latitude,
+        //   longitude: res.longitude,
+        //   scale: 18,
+        //   success:function(res) {
+        //     wx.chooseLocation({
+        //       success:function(res) {
+        //         console.log(res,'chooseLocation')
+        //       }
+        //     })
+        //   }
+        // })
       }
     })
+    setTimeout(() => {
+      console.log(this.state.latitude,this.state.longitude,"location");
+    }, 2000);
+  }
+
+  submit = () => {
+    type LogLevel = "log" | "info" | "warning" | "error" | "success";
+    const type: LogLevel = "success";
+  
+    Taro.atMessage({
+      message: '成功发放',
+      type: type,
+    })
+    Taro.navigateTo({
+      url: "/pages/index/index?acount=issuer",
+    });
   }
 
 	/* 
@@ -84,15 +136,19 @@ class InforChain extends Taro.Component<ProvideProps, ProvideState> {
 		const res = await NetworkManager.getProvideModel();
 		console.log(res,'itemModel')
 		this.setState({
-			goodCode: res.goodCode,
+			goodCode: this.$router.params.goodCode,
+			goodName: this.$router.params.goodName,
       itemModel: res.itemModel,
-		})
+    })
+    setTimeout(() => {
+      console.log(this.$router,'sfds')
+    }, 200);
 	}
   insRef = node => {
     this.refList = node;
   };
 	render() {
-		const { goodCode, itemModel } = this.state;
+		const { goodName, goodCode, itemModel } = this.state;
 		return (
 			<View className='lazy-view'>
           <View
@@ -104,27 +160,42 @@ class InforChain extends Taro.Component<ProvideProps, ProvideState> {
           >
             <View
               style={{
-                fontSize: "18px",
+                fontSize: "16px",
+                display: "flex",
 								fontFamily: "PingFangSC-Medium,PingFang SC",
-								width: "100vw",
+								width: "90vw",
                 color: "#114750",
 								textAlign: "center",
 								lineHeight: "60px",
-								height: "60px",
+								height: "120px",
 								margin: "10px 10px",
 								padding: "5px",
 								background: "rgba(255,255,255,1)",
-								borderRadius: "8px",
+                borderRadius: "8px",
+                flexWrap: "wrap",
 								border: "0px solid rgba(151,151,151,1)",
 								boxShadow: "0px 1px 5px rgba(0, 0, 0, 0.2)"
               }}
             >
-              {goodCode}
+              <View
+                style={{
+                  width: "88vw",
+                }}
+              >
+                物资码：{goodCode}
+              </View>
+              <View
+                style={{
+                  width: "88vw",
+                }}
+              >
+                物资类型：{goodName}
+              </View>
             </View>
           </View>
           <View 
             style={{
-              height: "calc(100vh - 90px)",
+              height: "calc(100vh - 120px)",
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between"
@@ -138,38 +209,84 @@ class InforChain extends Taro.Component<ProvideProps, ProvideState> {
               }}
             >
               {itemModel.map(item => {
-                return (
-                  <View
-                    key={item.key}
-                    style={{
-                      height: "66px",
-                      margin: "2px 10px",
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "flex-start",
-                      flexWrap: "wrap",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <Text
+                if (item.key == "发放地点") {
+                  return (
+                    <View
+                      key={item.key}
                       style={{
-                        width: "100vw"
+                        height: "66px",
+                        margin: "2px 10px",
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "flex-start",
+                        flexWrap: "wrap",
+                        overflow: "hidden",
                       }}
-                    >{item.key}</Text>
-                    <Input
+                    >
+                      <Text
+                        style={{
+                          width: "100vw"
+                        }}
+                      >{item.key}</Text>
+                      <Input
+                        style={{
+                          borderRadius: "4px",
+                          width: "80vw",
+                          height: "30px",
+                          boxSizing: "border-box",
+                          border: "1px solid rgba(206,206,206,1)"
+                        }}
+                        value={item.value}
+                      >
+                      </Input>
+                      <AtIcon value='map-pin' size='30' color='#3f536e'></AtIcon>
+                    </View>
+                  )
+                }
+                if (item.key != "发放地点") {
+                  return (
+                    <View
+                      key={item.key}
                       style={{
-                        borderRadius: "4px",
-                        width: "100vw",
-                        height: "30px",
-                        boxSizing: "border-box",
-                        border: "1px solid rgba(206,206,206,1)"
+                        height: "66px",
+                        margin: "2px 10px",
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "flex-start",
+                        flexWrap: "wrap",
+                        overflow: "hidden",
                       }}
-                    >{item.value}</Input>
-                  </View>
-                )
+                    >
+                      <Text
+                        style={{
+                          width: "100vw"
+                        }}
+                      >{item.key}</Text>
+                      <Input
+                        style={{
+                          borderRadius: "4px",
+                          width: "100vw",
+                          height: "30px",
+                          boxSizing: "border-box",
+                          border: "1px solid rgba(206,206,206,1)"
+                        }}
+                        value={item.value}
+                      >
+                      </Input>
+                    </View>
+                  )
+                }
               })}
             </View>
+            <AtImagePicker
+              files={this.state.files}
+              onChange={this.onChange.bind(this)}
+              showAddBtn={!this.state.isFull}
+            />
+            <AtMessage></AtMessage>
+
             <Button
               style={{
                 width: "90%",
@@ -178,10 +295,8 @@ class InforChain extends Taro.Component<ProvideProps, ProvideState> {
                 fontSize: "16px",
                 bottom: "10px"
               }}
-              onClick={() => {
-                this.getLocation()
-              }}
-            >上传图片</Button>
+              onClick={this.submit}
+            >确认发放</Button>
           </View>
 			</View>
 		)

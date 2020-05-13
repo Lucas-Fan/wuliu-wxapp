@@ -1,5 +1,6 @@
 import { ComponentType } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
+import {  AtMessage  } from 'taro-ui'
 import { View, Button, Text } from '@tarojs/components'
 import Affirm from "../../components/affirm/affirm";
 import { observer, inject } from '@tarojs/mobx'
@@ -13,6 +14,7 @@ interface EcceptProps {
 interface EcceptState {
   acceptModel: Array<KeyValue>
 }
+
 
 @inject('goodStore')
 @observer
@@ -52,6 +54,26 @@ class Eccept extends Taro.Component<EcceptProps, EcceptState> {
 
 	refList = {};
 
+  submit = () => {
+    let msg = '';
+    if (this.$router.params.type == "accept") {
+      msg = '成功装车'
+    } else {
+      msg = '成功送达'
+    }
+    type LogLevel = "log" | "info" | "warning" | "error" | "success";
+    const type: LogLevel = "success";
+  
+    Taro.atMessage({
+      message: msg,
+      type: type,
+    })
+    Taro.navigateTo({
+      url: "/pages/index/index?acount=trans",
+    });
+  }
+
+
 	/* 
 	 * 获得数据方法
 	 */
@@ -84,6 +106,7 @@ class Eccept extends Taro.Component<EcceptProps, EcceptState> {
         }}
       >
         <Affirm model={acceptModel}></Affirm>
+        <AtMessage></AtMessage>
         <Button
           style={{
             width: "90%",
@@ -92,6 +115,7 @@ class Eccept extends Taro.Component<EcceptProps, EcceptState> {
             fontSize: "16px",
             bottom: "10px",
           }}
+          onClick={this.submit}
         >{this.$router.params.type == "accept" ? "确认装车": "确认到达"}</Button>
 			</View>
 		)

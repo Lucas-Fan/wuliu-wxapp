@@ -6,7 +6,7 @@
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 import { View, Image, Text } from "@tarojs/components";
-
+import { AtIcon } from 'taro-ui'
 import { KeyValue } from "../../network/network";
 
 
@@ -30,6 +30,17 @@ class RankItem extends Taro.Component<AffirmProps, AffirmState> {
       is_punched: false
     };
   }
+
+  renderIcon = (item) => {
+    switch (item.key) {
+      case '到达地点':
+        {return <AtIcon value='map-pin' size='30' color='#3f536e'></AtIcon>;}
+        
+      case '出发地点':
+        {return <AtIcon value='map-pin' size='30' color='#3f536e'></AtIcon>;}
+    }
+  }
+
 
   render() {
     const { model } = this.props;
@@ -95,7 +106,7 @@ class RankItem extends Taro.Component<AffirmProps, AffirmState> {
                 style={{
                   flex: "1",
                   display: "flex",
-                  flexDirection: "column-reverse",
+                  flexDirection: "row",
                   justifyContent: "flex-end",
                   width: "50%",
                   alignItems: "flex-end"
@@ -106,11 +117,12 @@ class RankItem extends Taro.Component<AffirmProps, AffirmState> {
                     fontSize: "12px",
                     fontFamily: "PingFangSC-Semibold,PingFang SC",
                     color: "rgba(11,11,51,1)",
-                    textAlign: "right"
+                    textAlign: "right",
                   }}
                 >
                   {item.value}
                 </Text>
+                  {this.renderIcon(item)}
               </View>
             </View>
           )
